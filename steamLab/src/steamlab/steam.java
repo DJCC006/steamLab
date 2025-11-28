@@ -496,9 +496,14 @@ public class steam {
             return nombre;
         }
 
+        public int getCode() {
+            return code;
+        }
+
         public String getUsername() {
             return username;
         }
+
     }
 
     public Player login(String username, String password) throws IOException {
@@ -518,6 +523,52 @@ public class steam {
             }
         }
         return null;
+    }
+
+    public boolean updatePlayer(int code, String newName, String newPass) throws IOException {
+        player.seek(0);
+        while (player.getFilePointer() < player.length()) {
+            int c = player.readInt();
+            long pos = player.getFilePointer() - 4;
+            String u = player.readUTF();
+            String p = player.readUTF();
+            String n = player.readUTF();
+            long birth = player.readLong();
+            int downloads = player.readInt();
+            String img = player.readUTF();
+            String tipo = player.readUTF();
+
+            if (c == code) {
+                player.seek(pos + 4 + u.length() * 2 + 2);
+                player.writeUTF(newPass);
+                player.seek(pos + 4 + u.length() * 2 + 2 + newPass.length() * 2 + 2);
+                player.writeUTF(newName);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean deletePlayer(int code) throws IOException {
+        player.seek(0);
+        while (player.getFilePointer() < player.length()) {
+            long pos = player.getFilePointer();
+            int c = player.readInt();
+            String u = player.readUTF();
+            String p = player.readUTF();
+            String n = player.readUTF();
+            long birth = player.readLong();
+            int downloads = player.readInt();
+            String img = player.readUTF();
+            String tipo = player.readUTF();
+
+            if (c == code) {
+                player.seek(pos + 4);
+                player.writeUTF("BORRADO");
+                return true;
+            }
+        }
+        return false;
     }
 
 }

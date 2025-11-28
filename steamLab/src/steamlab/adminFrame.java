@@ -8,24 +8,23 @@ package steamlab;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import steamlab.steam.Player;
+import java.io.IOException;
+import java.util.ArrayList;
 /**
  *
  * @author ljmc2
  */
-public class adminFrame extends JFrame {
-    private steam st;
-    private Player currentUser;
 
-    public adminFrame(steam st, Player currentUser){
+public class adminFrame extends JFrame {
+
+    private steam st;
+    private steam.Player currentUser;
+
+    public adminFrame(steam st, steam.Player currentUser) {
         this.st = st;
         this.currentUser = currentUser;
 
-        setTitle("Admin - " + currentUser.getNombre());
-        setSize(800,600);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setTitle("Administrador");
+        setTitle("Administrador - " + currentUser.getNombre());
         setSize(800, 800);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -60,75 +59,158 @@ public class adminFrame extends JFrame {
         buttonsPanel.setBounds(0, 80, 700, 620);
         contentPanel.add(buttonsPanel);
 
-        JButton btn1 = new JButton("Registrar Jugador");
-        btn1.setBackground(steamBlue);
-        btn1.setForeground(textLight);
-        btn1.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        // Botones
+        JButton btn1 = createButton("Registrar Jugador", steamBlue, textLight);
         btn1.setBounds(10, 0, 330, 90);
         buttonsPanel.add(btn1);
 
-        JButton btn2 = new JButton("Modificar Jugador");
-        btn2.setBackground(steamBlue);
-        btn2.setForeground(textLight);
-        btn2.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        JButton btn2 = createButton("Modificar Jugador", steamBlue, textLight);
         btn2.setBounds(350, 0, 330, 90);
         buttonsPanel.add(btn2);
 
-        JButton btn3 = new JButton("Eliminar Jugador");
-        btn3.setBackground(steamBlue);
-        btn3.setForeground(textLight);
-        btn3.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        JButton btn3 = createButton("Eliminar Jugador", steamBlue, textLight);
         btn3.setBounds(10, 110, 330, 90);
         buttonsPanel.add(btn3);
 
-        JButton btn4 = new JButton("Registrar Juego");
-        btn4.setBackground(steamBlue);
-        btn4.setForeground(textLight);
-        btn4.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        JButton btn4 = createButton("Registrar Juego", steamBlue, textLight);
         btn4.setBounds(350, 110, 330, 90);
         buttonsPanel.add(btn4);
 
-        JButton btn5 = new JButton("Modificar Juego");
-        btn5.setBackground(steamBlue);
-        btn5.setForeground(textLight);
-        btn5.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        JButton btn5 = createButton("Modificar Juego", steamBlue, textLight);
         btn5.setBounds(10, 220, 330, 90);
         buttonsPanel.add(btn5);
 
-        JButton btn6 = new JButton("Eliminar Juego");
-        btn6.setBackground(steamBlue);
-        btn6.setForeground(textLight);
-        btn6.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        JButton btn6 = createButton("Eliminar Juego", steamBlue, textLight);
         btn6.setBounds(350, 220, 330, 90);
         buttonsPanel.add(btn6);
 
-        JButton btn7 = new JButton("Cambiar Precio");
-        btn7.setBackground(steamBlue);
-        btn7.setForeground(textLight);
-        btn7.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        JButton btn7 = createButton("Cambiar Precio", steamBlue, textLight);
         btn7.setBounds(10, 330, 330, 90);
         buttonsPanel.add(btn7);
 
-        JButton btn8 = new JButton("Ver Catálogo");
-        btn8.setBackground(steamBlue);
-        btn8.setForeground(textLight);
-        btn8.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        JButton btn8 = createButton("Ver Catálogo", steamBlue, textLight);
         btn8.setBounds(350, 330, 330, 90);
         buttonsPanel.add(btn8);
 
-        JButton btn9 = new JButton("Ver Reportes");
-        btn9.setBackground(steamBlue);
-        btn9.setForeground(textLight);
-        btn9.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        JButton btn9 = createButton("Ver Reportes", steamBlue, textLight);
         btn9.setBounds(190, 440, 330, 90);
         buttonsPanel.add(btn9);
 
-        JButton btn10 = new JButton("← Cerrar Sesión");
-        btn10.setBackground(bgDark);
-        btn10.setForeground(textLight);
-        btn10.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        btn10.setBounds(10, 10, 150, 50); 
+        JButton btn10 = createButton("← Cerrar Sesión", bgDark, textLight);
+        btn10.setBounds(10, 10, 150, 50);
         contentPanel.add(btn10);
+
+        // ActionListeners
+        btn1.addActionListener(e -> {
+            // Registrar jugador
+            String user = JOptionPane.showInputDialog(this, "Username:");
+            String pass = JOptionPane.showInputDialog(this, "Password:");
+            String nombre = JOptionPane.showInputDialog(this, "Nombre:");
+            long nacimiento = System.currentTimeMillis(); // Ejemplo simple
+            String rutaImg = "";
+            String tipo = "normal";
+
+            try {
+                st.addPlayer(user, pass, nombre, nacimiento, rutaImg, tipo);
+                JOptionPane.showMessageDialog(this, "Jugador registrado");
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        btn2.addActionListener(e -> {
+            try {
+                int code = Integer.parseInt(JOptionPane.showInputDialog(this, "Código del jugador a modificar:"));
+                String newName = JOptionPane.showInputDialog(this, "Nuevo nombre:");
+                String newPass = JOptionPane.showInputDialog(this, "Nueva contraseña:");
+
+                if(st.updatePlayer(code, newName, newPass)){
+                    JOptionPane.showMessageDialog(this, "Jugador modificado");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Jugador no encontrado");
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        btn3.addActionListener(e -> {
+            try {
+                int code = Integer.parseInt(JOptionPane.showInputDialog(this, "Código del jugador a eliminar:"));
+                if(st.deletePlayer(code)){
+                    JOptionPane.showMessageDialog(this, "Jugador eliminado (marcado como BORRADO)");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Jugador no encontrado");
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        btn4.addActionListener(e -> {
+            try {
+                String titulo = JOptionPane.showInputDialog(this, "Título del juego:");
+                char OS = JOptionPane.showInputDialog(this, "OS (W/M/L):").charAt(0);
+                int edadMin = Integer.parseInt(JOptionPane.showInputDialog(this, "Edad mínima:"));
+                double precio = Double.parseDouble(JOptionPane.showInputDialog(this, "Precio:"));
+                String rutaImg = "";
+
+                st.addGame(titulo, OS, edadMin, precio, rutaImg);
+                JOptionPane.showMessageDialog(this, "Juego registrado");
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        btn7.addActionListener(e -> {
+            try {
+                int code = Integer.parseInt(JOptionPane.showInputDialog(this, "Código del juego:"));
+                double newPrice = Double.parseDouble(JOptionPane.showInputDialog(this, "Nuevo precio:"));
+                if(st.updatePriceFor(code, newPrice)){
+                    JOptionPane.showMessageDialog(this, "Precio actualizado");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Juego no encontrado");
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        btn8.addActionListener(e -> {
+            try {
+                String catalogo = st.printGames();
+                JTextArea area = new JTextArea(catalogo);
+                area.setEditable(false);
+                JScrollPane scroll = new JScrollPane(area);
+                JOptionPane.showMessageDialog(this, scroll, "Catálogo de Juegos", JOptionPane.INFORMATION_MESSAGE);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        btn9.addActionListener(e -> {
+            try {
+                int code = Integer.parseInt(JOptionPane.showInputDialog(this, "Código del cliente:"));
+                String fileName = JOptionPane.showInputDialog(this, "Nombre del archivo:");
+                st.reportForClient(code, fileName);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        btn10.addActionListener(e -> {
+            this.dispose(); // cerrar sesión
+            // Aquí podrías volver a loginFrame si quieres
+        });
+    }
+
+    private JButton createButton(String text, Color bg, Color fg){
+        JButton btn = new JButton(text);
+        btn.setBackground(bg);
+        btn.setForeground(fg);
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        btn.setFocusPainted(false);
+        return btn;
     }
 
 }

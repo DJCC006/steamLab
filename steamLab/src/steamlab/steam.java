@@ -7,6 +7,8 @@ package steamlab;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  *
@@ -91,9 +93,9 @@ public class steam {
      
      
      /*
-     int code
+     int code   
 
-    String título
+    String título   
 
     char sistemaOperativo (Window, Mac o Linux)
 
@@ -109,7 +111,7 @@ public class steam {
      */
      
      
-   public void addGame(String titulo, char OS, int edadMin, double precio, byte[] Imagen) throws IOException{
+   public void addGame(String titulo, char OS, int edadMin, double precio, String rutaImagen) throws IOException{
        int code= getCode(2);
        
        
@@ -123,7 +125,7 @@ public class steam {
        games.writeInt(edadMin);
        games.writeDouble(precio);
        games.writeInt(0);
-       games.write(Imagen);
+       games.writeUTF(rutaImagen);
    }
    
    
@@ -145,7 +147,7 @@ public class steam {
     String tipoUsuario (“admin” o “normal”)
    */
    
-   public void addPlayer(String username, String password, String realName, long nacimiento,  byte[] Imagen, String tipo) throws IOException {
+   public void addPlayer(String username, String password, String realName, long nacimiento,  String rutaImagen, String tipo) throws IOException {
        int code=getCode(1);//obtencion de codigo en base a la funcion
    
        //Posicionamiento al final de la longitud
@@ -158,12 +160,129 @@ public class steam {
        player.writeUTF(realName);
        player.writeLong(nacimiento);
        player.writeInt(0);
-       player.write(Imagen);
+       player.writeUTF(rutaImagen);
        player.writeUTF(tipo);
        
        //Se registra al jugador
    }
    
+   
+   public boolean downloadGame(int codeGame, int codePlayer, char OS) throws IOException{
+       
+       boolean gExists=false;
+       boolean pExists=false;
+       boolean osExists=false;
+       boolean ed=false;
+       long posGame=0;
+       long posPlayer=0;
+       int minAge=0;
+       
+       
+       //revion de existencia juego
+       games.seek(0);
+       while(games.getFilePointer()<games.length()){
+           int code= games.readInt();
+           if(code==codeGame){
+               gExists=true;
+               posGame=games.getFilePointer();
+               games.readUTF();
+               games.readChar();
+               minAge=games.readInt();//obtencion de edad minima para ese juego
+               break;
+           }
+           
+           //movimiento Puntero
+           games.readUTF();
+           games.readChar();
+           games.readInt();
+           games.readDouble();
+           games.readInt();
+           games.readUTF();
+           
+           //lee todo y salta al nuevo espacio
+       }
+       
+       //revision de existencia jugador
+       player.seek(0);
+       while(player.getFilePointer()<player.length()){
+           int code= player.readInt();
+           
+           if(code == codePlayer){
+               pExists=true;
+               posPlayer=player.getFilePointer();//referencia de jugador 
+               break;
+           }
+           
+           player.readUTF();
+           player.readUTF();
+           player.readUTF();
+           player.readLong();
+           player.readInt();
+           player.readUTF();
+           player.readUTF();
+           //lee y continua
+       }
+       
+       
+       //Verificacion OS
+       games.seek(posGame);//ubicarnos en la referencia del game
+       games.readUTF();
+       if(OS == games.readChar()){
+           osExists=true;
+       }
+       
+       
+       
+       //verificacion edad
+       player.seek(posPlayer);//posicion en base a codigo
+       
+       //movimiento puntero
+       player.readUTF();
+       player.readUTF();
+       player.readUTF();
+       long nPlayer= player.readLong();
+       
+       int edadActual=calcularEdad(nPlayer);
+       
+       if(edadActual>minAge){
+           ed=true;
+       }
+       
+       
+       
+       
+       if(gExists==true && pExists==true && osExists == true && ed ==true){
+           return true;
+       }
+       
+       return false;
+       
+   }
+   
+   
+   private int calcularEdad(long fecha){
+       Date nacimiento = new Date(fecha);
+       
+       Calendar birthCalendar = Calendar.getInstance();
+       birthCalendar.setTime(nacimiento);
+       
+       Calendar hoy= Calendar.getInstance();
+       
+       int edad= hoy.get((Calendar.YEAR)- birthCalendar.get(Calendar.YEAR));
+       
+       if(hoy.get(Calendar.MONTH)< birthCalendar.get(Calendar.MONTH)){
+           edad--;
+       }
+       
+       else if(hoy.get(Calendar.MONTH)== birthCalendar.get(Calendar.MONTH)){
+           if(hoy.get(Calendar.DAY_OF_MONTH)< birthCalendar.get(Calendar.DAY_OF_MONTH)){
+               edad--;
+           }
+       }
+       
+       return edad;
+       
+   }
    
    
     

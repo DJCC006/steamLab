@@ -16,26 +16,21 @@ public class catalogFrame extends JFrame {
 
     public catalogFrame() {
 
-        setTitle("Steam - Catálogo");
+        setTitle("CATÁLOGO");
         setSize(900, 650);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(true);
 
-        // Colores Steam
         Color bgDark = new Color(23, 26, 33);
         Color panelDark = new Color(36, 41, 51);
         Color steamBlue = new Color(0, 153, 255);
         Color textLight = Color.WHITE;
 
-        // Panel principal
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(bgDark);
         add(mainPanel);
 
-        // ----------------------------------------------
-        // PANEL SUPERIOR (Volver + Título Catálogo)
-        // ----------------------------------------------
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setBackground(bgDark);
         topPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -57,34 +52,27 @@ public class catalogFrame extends JFrame {
 
         mainPanel.add(topPanel, BorderLayout.NORTH);
 
-        // ----------------------------------------------
-        // PANEL DEL CATÁLOGO (scroll con tarjetas)
-        // ----------------------------------------------
         JPanel gridPanel = new JPanel();
         gridPanel.setBackground(bgDark);
         gridPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 25, 25));
 
-        // TEMPORAL: agregar tarjetas de muestra (sin lógica)
         for (int i = 0; i < 8; i++) {
             gridPanel.add(crearTarjetaDemo());
         }
 
-        JScrollPane scroll = new JScrollPane(gridPanel);
-        scroll.getVerticalScrollBar().setUnitIncrement(16);
+       JScrollPane scroll = new JScrollPane(gridPanel);
+        scroll.getHorizontalScrollBar().setUnitIncrement(16);
+
         scroll.setBorder(null);
         scroll.getViewport().setBackground(bgDark);
 
         mainPanel.add(scroll, BorderLayout.CENTER);
 
-        // LISTENER VACÍO VOLVER
         btnVolver.addActionListener(e -> {
             // TODO volver al menu
         });
     }
 
-    // ------------------------------------------------------
-    // TARJETA DEMO — diseño tipo Steam (sin lógica)
-    // ------------------------------------------------------
     private JPanel crearTarjetaDemo() {
 
         JPanel tarjeta = new JPanel();
@@ -114,7 +102,6 @@ public class catalogFrame extends JFrame {
             }
         });
 
-        // Imagen demo
         JLabel img = new JLabel();
         img.setPreferredSize(new Dimension(180, 180));
         img.setOpaque(true);
@@ -126,14 +113,12 @@ public class catalogFrame extends JFrame {
         img.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
         img.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Nombre
         JLabel nombre = new JLabel("<html><center>Nombre del Juego</center></html>");
         nombre.setForeground(Color.WHITE);
         nombre.setFont(new Font("Segoe UI", Font.BOLD, 15));
         nombre.setAlignmentX(Component.CENTER_ALIGNMENT);
         nombre.setBorder(new EmptyBorder(5, 0, 5, 0));
 
-        // Etiqueta tipo juego
         JLabel tipo = new JLabel("GAME");
         tipo.setOpaque(true);
         tipo.setBackground(new Color(0, 153, 255));
@@ -142,7 +127,6 @@ public class catalogFrame extends JFrame {
         tipo.setAlignmentX(Component.CENTER_ALIGNMENT);
         tipo.setBorder(new EmptyBorder(4, 8, 4, 8));
 
-        // Precio demo
         JLabel precio = new JLabel("299 Lps");
         precio.setForeground(new Color(0, 153, 255));
         precio.setFont(new Font("Segoe UI", Font.BOLD, 16));

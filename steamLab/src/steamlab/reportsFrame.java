@@ -81,9 +81,18 @@ public class reportsFrame extends JFrame {
         txtUsuario.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
         txtUsuario.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 
+        // NUEVO CAMPO: nombre del reporte
+        JLabel lblNombreReporte = new JLabel("Nombre del reporte:");
+        lblNombreReporte.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        lblNombreReporte.setForeground(Color.WHITE);
+
+        JTextField txtNombreReporte = new JTextField();
+        txtNombreReporte.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
+        txtNombreReporte.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+
         JButton btnGenerar = new JButton("Generar reporte");
         btnGenerar.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        btnGenerar.setBackground(blueSteam);
+        btnGenerar.setBackground(new Color(0, 119, 200));
         btnGenerar.setForeground(Color.WHITE);
         btnGenerar.setFocusPainted(false);
         btnGenerar.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
@@ -99,6 +108,10 @@ public class reportsFrame extends JFrame {
         panelGenerar.add(lblUser);
         panelGenerar.add(Box.createVerticalStrut(8));
         panelGenerar.add(txtUsuario);
+        panelGenerar.add(Box.createVerticalStrut(15));
+        panelGenerar.add(lblNombreReporte);
+        panelGenerar.add(Box.createVerticalStrut(8));
+        panelGenerar.add(txtNombreReporte);
         panelGenerar.add(Box.createVerticalStrut(20));
         panelGenerar.add(btnGenerar);
 

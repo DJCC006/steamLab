@@ -56,7 +56,7 @@ public class profileFrame extends JFrame {
         lblImagen.setOpaque(true);
         lblImagen.setBackground(Color.GRAY);
         lblImagen.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
-        ImageIcon icono = new ImageIcon(currentUser.getRutaImagen() != null ? currentUser.getRutaImagen() : "src/res/defaultImg.jpg");
+        ImageIcon icono = new ImageIcon(currentUser.getImagePath() != null ? currentUser.getImagePath() : "src/res/defaultImg.jpg");
         Image img = icono.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
         lblImagen.setIcon(new ImageIcon(img));
         contentPanel.add(lblImagen);

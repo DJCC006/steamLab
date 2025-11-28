@@ -11,8 +11,13 @@ import java.awt.*;
  * @author ljmc2
  */
 public class reportsFrame extends JFrame {
+    private steam st;
+    private steam.Player currentUser;
 
-    public reportsFrame() {
+    public reportsFrame(steam st, steam.Player currentUser){
+        this.st = st;
+        this.currentUser = currentUser;
+        
         setTitle("REPORTES");
         setSize(700, 500);
         setLocationRelativeTo(null);
@@ -134,7 +139,5 @@ public class reportsFrame extends JFrame {
         setVisible(true);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new reportsFrame().setVisible(true));
-    }
+    
 }

@@ -8,13 +8,18 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import steamlab.steam.Player;
 /**
  *
  * @author ljmc2
  */
 public class catalogFrame extends JFrame {
+    private steam st;
+    private Player currentUser;
 
-    public catalogFrame() {
+    public catalogFrame(steam st, Player currentUser){
+        this.st = st;
+        this.currentUser = currentUser;
 
         setTitle("CATÁLOGO");
         setSize(900, 650);
@@ -141,8 +146,4 @@ public class catalogFrame extends JFrame {
         return tarjeta;
     }
 
-    // Test
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new catalogFrame().setVisible(true));
-    }
 }

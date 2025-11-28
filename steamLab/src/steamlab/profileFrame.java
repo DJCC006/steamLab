@@ -22,8 +22,12 @@ import javax.swing.border.EmptyBorder;
  * @author ljmc2
  */
 public class profileFrame extends JFrame {
+    private steam st;
+    private steam.Player currentUser;
 
-    public profileFrame() {
+    public profileFrame(steam st, steam.Player currentUser){
+        this.st = st;
+        this.currentUser = currentUser;
 
         setTitle("Perfil del Usuario");
         setSize(700, 750);
@@ -155,7 +159,5 @@ public class profileFrame extends JFrame {
         contentPanel.add(btn10);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new profileFrame().setVisible(true));
-    }
+    
 }

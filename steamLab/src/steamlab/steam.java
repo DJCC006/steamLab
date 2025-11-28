@@ -475,11 +475,7 @@ public class steam {
        }
        
        //escritura de los datos en el archivo
-       
-       
-       
-       
-       
+
    }
    
    
@@ -504,7 +500,22 @@ public class steam {
        return false;
    }
    
-   
+   public String printGames() throws IOException{
+       games.seek(0);
+       String gameList="";
+       while(games.getFilePointer()< games.length()){
+           gameList+= games.readInt() + " | ";
+           gameList+= games.readUTF() + " | ";
+           gameList+= games.readChar() + " | ";
+           gameList += games.readInt()+" | ";
+           gameList += games.readDouble()+" | ";
+           gameList += games.readInt()+" | ";
+           gameList+=games.readUTF() + " | ";
+           gameList+="\n";
+       }
+       
+       return gameList;
+   }
     
     
     

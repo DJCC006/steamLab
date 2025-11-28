@@ -39,11 +39,7 @@ public class steam {
             initCodes();
             
             
-        }catch(IOException e){}
-        
-       
-        
-                
+        }catch(IOException e){}        
     }
     
     
@@ -60,6 +56,115 @@ public class steam {
             codes.writeInt(1);
         }   
     }
+     
+     
+     
+    
+     public int getCode(int type) throws IOException {
+         
+        if(type>=1 && type<=3){
+            if(type==1){
+              codes.seek(0);
+              int actualCode=codes.readInt();
+              codes.seek(0);
+              codes.writeInt(actualCode+1);
+              return actualCode;
+          }
+          if(type==2){
+              codes.seek(1);
+              int actualCode=codes.readInt();
+              codes.seek(1);
+              codes.writeInt(actualCode+1);
+              return actualCode;
+          }
+          if(type==3){
+              codes.seek(2);
+              int actualCode=codes.readInt();
+              codes.seek(2);
+              codes.writeInt(actualCode+1);
+              return actualCode;
+          }   
+        }
+        
+        return 0; //tener en consideracion esto bien!! Esto equivale a opcion 
+    }
+     
+     
+     /*
+     int code
+
+    String título
+
+    char sistemaOperativo (Window, Mac o Linux)
+
+    int edadMínima
+
+    double precio
+
+    int contadorDownloads
+
+    Imagen (almacenada como bytes o ruta relativa)
+     
+     
+     */
+     
+     
+   public void addGame(){
+       
+       
+       
+       
+   }
+   
+   
+   /*
+   int code
+
+    String username
+
+    String password
+
+    String nombre
+
+    long nacimiento 
+
+    int contadorDownloads
+
+    Imagen
+
+    String tipoUsuario (“admin” o “normal”)
+   */
+   
+   public void addPlayer() throws IOException {
+       int code=getCode(1);//obtencion de codigo en base a la funcion
+       
+       //solo para tener la idea de las cosas
+       String username="";
+       String password="";
+       String realName="";
+       long nacimiento=0;
+       //contadowDownloads
+       byte[] Imagen = null;
+       String tipo="";
+       
+       //Posicionamiento al final de la longitud
+       player.seek(player.length());
+       
+       //Llenado de datos
+       player.writeInt(code);
+       player.writeUTF(username);
+       player.writeUTF(password);
+       player.writeUTF(realName);
+       player.writeLong(nacimiento);
+       player.writeInt(0);
+       player.write(Imagen);
+       player.writeUTF(tipo);
+       
+       //Se registra al jugador
+   }
+   
+   
+   
     
     
     

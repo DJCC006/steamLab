@@ -4,12 +4,15 @@
  */
 package steamlab;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Calendar;
 import java.util.Date;
 import java.text.SimpleDateFormat;
+import javax.swing.JOptionPane;
 /**
  *
  * @author David
@@ -399,6 +402,108 @@ public class steam {
        
        return false;
    }
+   
+   
+   
+   public void reportForClient(int codigo, String fileName) throws IOException {
+       
+       File newReport = new File("steam", fileName+".txt");
+       long posClient=0;
+       String username="";
+       String nombre = "";
+       long nacimiento=0;
+       int descargas =0;
+       String rutaImag ="";
+       String type="";
+       
+       
+       
+       
+       //buscar existencia de cliente
+       
+       if(searchClient(codigo)){
+           player.seek(0);
+           while(player.getFilePointer()< player.length()){
+                int code=player.readInt();
+                if(code!= codigo){
+                     posClient=player.getFilePointer();
+                }
+                player.readUTF();
+                player.readUTF();
+                player.readUTF();
+                player.readLong();
+                player.readInt();
+                player.readUTF();
+                player.readUTF();
+           }
+           
+           //extraccion de info
+           player.seek(posClient);
+           username=player.readUTF();
+           player.readUTF();//obviamos password
+           nombre = player.readUTF();
+           nacimiento = player.readLong();
+           descargas = player.readInt();
+           rutaImag = player.readUTF();
+           type = player.readUTF();
+           
+           
+           
+           Date fechanacimiento = new Date(nacimiento);
+           String format = "dd/MM/yyyy";
+           SimpleDateFormat formtear = new SimpleDateFormat(format);
+           String fechaD= formtear.format(fechanacimiento);
+           
+           
+           
+           BufferedWriter escribir = new BufferedWriter(new FileWriter(newReport));
+           escribir.write("Codigo: "+codigo+"\n");
+           escribir.write("Username: "+username+"\n");
+           escribir.write("Nombre: "+nombre+"\n");
+           escribir.write("Fecha Nacimiento: "+fechaD);
+           escribir.write("Descargas Totales: "+descargas);
+           escribir.write("Tipo de Cuenta: "+type);
+           escribir.close();
+           
+           if(newReport.createNewFile()){
+               JOptionPane.showMessageDialog(null, "REPORTE CREADO");
+           }else{
+               JOptionPane.showMessageDialog(null, "NO SE PUEDE CREAR REPORTE");
+           }
+       }else{
+           JOptionPane.showMessageDialog(null, "NO SE PUEDE CREAR REPORTE");
+       }
+       
+       //escritura de los datos en el archivo
+       
+       
+       
+       
+       
+   }
+   
+   
+   
+   private boolean searchClient(int codigo) throws IOException {
+       player.seek(0);
+       while(player.getFilePointer()< player.length()){
+           int code=player.readInt();
+           if(code== codigo){
+               return true; 
+           }
+           player.readUTF();
+           player.readUTF();
+           player.readUTF();
+           player.readLong();
+           player.readInt();
+           player.readUTF();
+           player.readUTF();
+       }
+       
+       
+       return false;
+   }
+   
    
     
     

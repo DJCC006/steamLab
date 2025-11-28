@@ -6,6 +6,7 @@ package steamlab;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 /**
  *
@@ -14,6 +15,7 @@ import java.io.IOException;
 public class reportsFrame extends JFrame {
     private static steam st;
     private static steam.Player currentUser;
+    private DefaultListModel<String> modeloLista = new DefaultListModel<>();
 
     public reportsFrame(steam st, steam.Player currentUser){
         this.st = st;
@@ -91,6 +93,10 @@ public class reportsFrame extends JFrame {
         txtNombreReporte.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
         txtNombreReporte.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 
+        
+
+        
+        
         JButton btnGenerar = new JButton("Generar reporte");
         btnGenerar.setFont(new Font("Segoe UI", Font.BOLD, 16));
         btnGenerar.setBackground(new Color(0, 119, 200));
@@ -109,6 +115,7 @@ public class reportsFrame extends JFrame {
             
             try{
                 st.reportForClient(code, reportName);
+                
             }catch(IOException e2){}
             
             
@@ -138,11 +145,16 @@ public class reportsFrame extends JFrame {
         lblVer.setForeground(Color.WHITE);
         lblVer.setHorizontalAlignment(SwingConstants.CENTER);
         panelVer.add(lblVer, BorderLayout.NORTH);
-
-        DefaultListModel<String> modeloLista = new DefaultListModel<>();
-        modeloLista.addElement("Reporte_Usuario01.txt");
-        modeloLista.addElement("Reporte_Usuario02.txt");
-        modeloLista.addElement("Reporte_Usuario03.txt");
+        
+        
+        //Funcion que escanee folder de steam para generar lista
+        
+        cargarReportes();
+        
+        
+        // modeloLista.addElement("Reporte_Usuario01.txt");
+        //modeloLista.addElement("Reporte_Usuario02.txt");
+        //modeloLista.addElement("Reporte_Usuario03.txt");
 
         JList<String> listaReportes = new JList<>(modeloLista);
         listaReportes.setFont(new Font("Segoe UI", Font.PLAIN, 14));
@@ -155,6 +167,16 @@ public class reportsFrame extends JFrame {
 
         listaReportes.addListSelectionListener(e -> {
             // TODO: ver reporte seleccionado
+            
+            if(!e.getValueIsAdjusting()){
+                String archivoSeleccionado= listaReportes.getSelectedValue();
+                
+                if(archivoSeleccionado != null && ! archivoSeleccionado.endsWith(".txt")){
+                    openFile(archivoSeleccionado);
+                }
+            }
+            
+            
         });
 
         contenido.add(panelGenerar);
@@ -168,5 +190,24 @@ public class reportsFrame extends JFrame {
     public static void main(String[] args) {
         reportsFrame ventana = new reportsFrame(st, currentUser);
     }
+    
+    
+    
+    private void cargarReportes(){
+        File root = new File("steam");
+        for(File file: root.listFiles()){
+            if(file.isFile() && file.getName().endsWith(".txt")){
+                modeloLista.addElement(file.getName());
+            }
+        }
+    }
+    
+    
+    
+    
+    private void openFile(String fileName){
+        File fileToOpen = new File("steam",fileName);
+    }
+    
     
 }

@@ -5,27 +5,30 @@
 package steamlab;
 
 import java.awt.*;
+import java.io.IOException;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import steamlab.steam.Player;
+
 /**
  *
  * @author ljmc2
  */
 public class userFrame extends JFrame {
+
     private steam st;
     private Player currentUser;
 
-    public userFrame(steam st, Player currentUser){
+    public userFrame(steam st, Player currentUser) {
         this.st = st;
         this.currentUser = currentUser;
 
         setTitle("Admin - " + currentUser.getNombre());
-        setSize(800,600);
+        setSize(800, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("MENÚ USUARIO");
-        setSize(620, 520); 
+        setSize(620, 520);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
@@ -77,31 +80,33 @@ public class userFrame extends JFrame {
         centerPanel.add(btnConfigPerfil);
 
         mainPanel.add(centerPanel, BorderLayout.CENTER);
-        
+
         btnVolver.addActionListener(e -> {
-            // TODO: volver
-        });
+            this.dispose();
 
+            new loginFrame(st).setVisible(true);
+        });
         btnCatalogo.addActionListener(e -> {
-            // TODO: ver catálogo
+            this.dispose();
+            new catalogFrame(st, currentUser).setVisible(true);
         });
 
+        /*Esto va en catalogo
         btnDescargar.addActionListener(e -> {
-            // TODO: descargar juegos
+            this.dispose();
+            new catalogFrame(st, currentUser).setVisible(true);
         });
-
+         */
         btnDescargados.addActionListener(e -> {
-            // TODO: ver juegos descargados
+
         });
 
         btnConfigPerfil.addActionListener(e -> {
-            // TODO: configurar perfil
+            this.dispose();
+            new profileFrame(st, currentUser).setVisible(true);
         });
-        
-        
+
     }
-    
-    
 
     private JButton createSteamButton(String text, Color bg, Color fg) {
         JButton btn = new JButton(text);
@@ -113,4 +118,25 @@ public class userFrame extends JFrame {
         btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         return btn;
     }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            try {
+                // Supongamos que 'steam' es tu clase principal que maneja players
+                steam st = new steam();
+
+                // Ejemplo de login
+                Player usuario = st.login("miUsuario", "miContraseña");
+
+                if (usuario != null) {
+                    new userFrame(st, usuario).setVisible(true);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Usuario o contraseña incorrectos");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
 }

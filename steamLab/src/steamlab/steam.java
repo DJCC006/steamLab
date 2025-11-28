@@ -109,11 +109,21 @@ public class steam {
      */
      
      
-   public void addGame(){
+   public void addGame(String titulo, char OS, int edadMin, double precio, byte[] Imagen) throws IOException{
+       int code= getCode(2);
        
        
+       games.seek(games.length());//posicionamiento al final de la lista
        
        
+       //agregado de informacion
+       games.writeInt(code);
+       games.writeUTF(titulo);
+       games.writeChar(OS);
+       games.writeInt(edadMin);
+       games.writeDouble(precio);
+       games.writeInt(0);
+       games.write(Imagen);
    }
    
    

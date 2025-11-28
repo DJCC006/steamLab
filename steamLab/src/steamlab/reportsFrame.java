@@ -6,13 +6,14 @@ package steamlab;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 /**
  *
  * @author ljmc2
  */
 public class reportsFrame extends JFrame {
-    private steam st;
-    private steam.Player currentUser;
+    private static steam st;
+    private static steam.Player currentUser;
 
     public reportsFrame(steam st, steam.Player currentUser){
         this.st = st;
@@ -73,7 +74,7 @@ public class reportsFrame extends JFrame {
         lblGen.setForeground(Color.WHITE);
         lblGen.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel lblUser = new JLabel("Ingrese nombre del usuario:");
+        JLabel lblUser = new JLabel("Ingrese codigo del usuario:");
         lblUser.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         lblUser.setForeground(Color.WHITE);
 
@@ -81,9 +82,18 @@ public class reportsFrame extends JFrame {
         txtUsuario.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
         txtUsuario.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 
+        // NUEVO CAMPO: nombre del reporte
+        JLabel lblNombreReporte = new JLabel("Nombre del reporte:");
+        lblNombreReporte.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        lblNombreReporte.setForeground(Color.WHITE);
+
+        JTextField txtNombreReporte = new JTextField();
+        txtNombreReporte.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
+        txtNombreReporte.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+
         JButton btnGenerar = new JButton("Generar reporte");
         btnGenerar.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        btnGenerar.setBackground(blueSteam);
+        btnGenerar.setBackground(new Color(0, 119, 200));
         btnGenerar.setForeground(Color.WHITE);
         btnGenerar.setFocusPainted(false);
         btnGenerar.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
@@ -92,6 +102,18 @@ public class reportsFrame extends JFrame {
         // Listener vacío
         btnGenerar.addActionListener(e -> {
             // TODO: generar reporte automáticamente
+            
+            
+            int code= Integer.valueOf(txtUsuario.getText());
+            String reportName = txtNombreReporte.getText();
+            
+            try{
+                st.reportForClient(code, reportName);
+            }catch(IOException e2){}
+            
+            
+            
+            
         });
 
         panelGenerar.add(lblGen);
@@ -99,6 +121,10 @@ public class reportsFrame extends JFrame {
         panelGenerar.add(lblUser);
         panelGenerar.add(Box.createVerticalStrut(8));
         panelGenerar.add(txtUsuario);
+        panelGenerar.add(Box.createVerticalStrut(15));
+        panelGenerar.add(lblNombreReporte);
+        panelGenerar.add(Box.createVerticalStrut(8));
+        panelGenerar.add(txtNombreReporte);
         panelGenerar.add(Box.createVerticalStrut(20));
         panelGenerar.add(btnGenerar);
 
@@ -138,6 +164,9 @@ public class reportsFrame extends JFrame {
         add(mainPanel);
         setVisible(true);
     }
-
+    
+    public static void main(String[] args) {
+        reportsFrame ventana = new reportsFrame(st, currentUser);
+    }
     
 }

@@ -8,7 +8,7 @@ package steamlab;
  *
  * @author David
  */
-public class SteamLab {
+public class Main {
 
     /**
      * @param args the command line arguments

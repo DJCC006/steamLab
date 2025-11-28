@@ -6,13 +6,14 @@ package steamlab;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 /**
  *
  * @author ljmc2
  */
 public class reportsFrame extends JFrame {
-    private steam st;
-    private steam.Player currentUser;
+    private static steam st;
+    private static steam.Player currentUser;
 
     public reportsFrame(steam st, steam.Player currentUser){
         this.st = st;
@@ -73,7 +74,7 @@ public class reportsFrame extends JFrame {
         lblGen.setForeground(Color.WHITE);
         lblGen.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel lblUser = new JLabel("Ingrese nombre del usuario:");
+        JLabel lblUser = new JLabel("Ingrese codigo del usuario:");
         lblUser.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         lblUser.setForeground(Color.WHITE);
 
@@ -101,6 +102,18 @@ public class reportsFrame extends JFrame {
         // Listener vacío
         btnGenerar.addActionListener(e -> {
             // TODO: generar reporte automáticamente
+            
+            
+            int code= Integer.valueOf(txtUsuario.getText());
+            String reportName = txtNombreReporte.getText();
+            
+            try{
+                st.reportForClient(code, reportName);
+            }catch(IOException e2){}
+            
+            
+            
+            
         });
 
         panelGenerar.add(lblGen);
@@ -152,5 +165,8 @@ public class reportsFrame extends JFrame {
         setVisible(true);
     }
     
+    public static void main(String[] args) {
+        reportsFrame ventana = new reportsFrame(st, currentUser);
+    }
     
 }

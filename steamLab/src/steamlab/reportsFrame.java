@@ -187,10 +187,6 @@ public class reportsFrame extends JFrame {
         setVisible(true);
     }
     
-    public static void main(String[] args) {
-        reportsFrame ventana = new reportsFrame(st, currentUser);
-    }
-    
     
     
     private void cargarReportes(){
@@ -207,6 +203,18 @@ public class reportsFrame extends JFrame {
     
     private void openFile(String fileName){
         File fileToOpen = new File("steam",fileName);
+        
+        if(Desktop.isDesktopSupported()){
+            Desktop desktop=Desktop.getDesktop();
+            try{
+                desktop.open(fileToOpen);
+                
+            }catch(IOException e){
+                
+            }
+        }else{
+            JOptionPane.showMessageDialog(null,"Tipo de archivo no soportado.");
+        }
     }
     
     

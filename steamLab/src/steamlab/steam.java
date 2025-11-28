@@ -12,6 +12,7 @@ import java.io.RandomAccessFile;
 import java.util.Calendar;
 import java.util.Date;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
 /**
@@ -46,6 +47,7 @@ public class steam {
             initCodes();
 
         } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -73,16 +75,16 @@ public class steam {
                 return actualCode;
             }
             if (type == 2) {
-                codes.seek(1);
+                codes.seek(4);
                 int actualCode = codes.readInt();
-                codes.seek(1);
+                codes.seek(4);
                 codes.writeInt(actualCode + 1);
                 return actualCode;
             }
             if (type == 3) {
-                codes.seek(2);
+                codes.seek(8);
                 int actualCode = codes.readInt();
-                codes.seek(2);
+                codes.seek(8);
                 codes.writeInt(actualCode + 1);
                 return actualCode;
             }
@@ -93,20 +95,12 @@ public class steam {
 
     /*
      int code   
-
     String título   
-
     char sistemaOperativo (Window, Mac o Linux)
-
     int edadMínima
-
     double precio
-
     int contadorDownloads
-
     Imagen (almacenada como bytes o ruta relativa)
-     
-     
      */
     public void addGame(String titulo, char OS, int edadMin, double precio, String rutaImagen) throws IOException {
         int code = getCode(2);
@@ -125,22 +119,15 @@ public class steam {
 
     /*
    int code
-
     String username
-
     String password
-
     String nombre
-
     long nacimiento 
-
     int contadorDownloads
-
     Imagen
-
     String tipoUsuario (“admin” o “normal”)
      */
-    public void addPlayer(String username, String password, String realName, long nacimiento, String rutaImagen, String tipo) throws IOException {
+    public int addPlayer(String username, String password, String realName, long nacimiento, String rutaImagen, String tipo) throws IOException {
         int code = getCode(1);//obtencion de codigo en base a la funcion
 
         //Posicionamiento al final de la longitud
@@ -153,10 +140,10 @@ public class steam {
         player.writeUTF(realName);
         player.writeLong(nacimiento);
         player.writeInt(0);
-        player.writeUTF(rutaImagen);
+        player.writeUTF(rutaImagen != null ? rutaImagen : "");
         player.writeUTF(tipo);
-
-        //Se registra al jugador
+        
+        return code;
     }
 
     public boolean downloadGame(int codeGame, int codePlayer, char OS) throws IOException {
@@ -175,86 +162,77 @@ public class steam {
 
         double precio = 0;
 
-        //revion de existencia juego
+        //revision de existencia juego
         games.seek(0);
         while (games.getFilePointer() < games.length()) {
+            long pos = games.getFilePointer();
             int code = games.readInt();
+            String titulo = games.readUTF();
+            char os = games.readChar();
+            int edadMin = games.readInt();
+            double precioJ = games.readDouble();
+            int downloads = games.readInt();
+            String ruta = games.readUTF();
+
             if (code == codeGame) {
                 gExists = true;
-                posGame = games.getFilePointer();
-                gName = games.readUTF();
-                games.readChar();
-                minAge = games.readInt();//obtencion de edad minima para ese juego
-
-                precio = games.readDouble();
-                games.readInt();
-                rutaImagen = games.readUTF();
-
+                posGame = pos;
+                gName = titulo;
+                minAge = edadMin;
+                precio = precioJ;
+                rutaImagen = ruta;
                 break;
             }
-
-            //movimiento Puntero
-            games.readUTF();
-            games.readChar();
-            games.readInt();
-            games.readDouble();
-            games.readInt();
-            games.readUTF();
-
-            //lee todo y salta al nuevo espacio
         }
 
         //revision de existencia jugador
         player.seek(0);
         while (player.getFilePointer() < player.length()) {
+            long pos = player.getFilePointer();
             int code = player.readInt();
+            String u = player.readUTF();
+            String p = player.readUTF();
+            String nombre = player.readUTF();
+            long nacimiento = player.readLong();
+            int cont = player.readInt();
+            String img = player.readUTF();
+            String tipo = player.readUTF();
 
-            if (code == codePlayer) {
+            if (code == codePlayer && !u.equals("BORRADO")) {
                 pExists = true;
-                posPlayer = player.getFilePointer();//referencia de jugador 
-
-                player.readUTF();
-                player.readUTF();
-
-                pName = player.readUTF();
+                posPlayer = pos;
+                pName = nombre;
                 break;
             }
-
-            player.readUTF();
-            player.readUTF();
-            player.readUTF();
-            player.readLong();
-            player.readInt();
-            player.readUTF();
-            player.readUTF();
-            //lee y continua
         }
 
         //Verificacion OS
-        games.seek(posGame);//ubicarnos en la referencia del game
-        games.readUTF();
-        if (OS == games.readChar()) {
-            osExists = true;
+        if (gExists) {
+            games.seek(posGame);
+            games.readInt();
+            games.readUTF();
+            if (OS == games.readChar()) {
+                osExists = true;
+            }
         }
 
         //verificacion edad
-        player.seek(posPlayer);//posicion en base a codigo
-
-        //movimiento puntero
-        player.readUTF();
-        player.readUTF();
-        player.readUTF();
-        long nPlayer = player.readLong();
-
-        int edadActual = calcularEdad(nPlayer);
-
-        if (edadActual > minAge) {
-            ed = true;
+        if (pExists) {
+            player.seek(posPlayer);
+            player.readInt();
+            player.readUTF();
+            player.readUTF();
+            player.readUTF();
+            long nPlayer = player.readLong();
+            int edadActual = calcularEdad(nPlayer);
+            if (edadActual >= minAge) { // >= para permitir edad exacta
+                ed = true;
+            }
         }
 
-        if (gExists == true && pExists == true && osExists == true && ed == true) {
+        if (gExists && pExists && osExists && ed) {
 
-            //Crecion codigo
+            //Creacion codigo
             int codeD = getCode(3);
 
             //creacion archivo de nueva descarga
@@ -269,46 +247,40 @@ public class steam {
            UTF Nombres
            UTF precio 
              */
-            //obtencion de fecha
             Calendar fechaDescarga = Calendar.getInstance();
-            String format = "dd/MM/yyyy";
-            SimpleDateFormat formtear = new SimpleDateFormat(format);
+            SimpleDateFormat formtear = new SimpleDateFormat("dd/MM/yyyy");
             String fechaD = formtear.format(fechaDescarga.getTime());
 
             downFile.writeUTF(fechaD);
             downFile.writeUTF(rutaImagen);
             downFile.writeUTF("Download #" + codeD);
             downFile.writeUTF(pName + " ha bajado [" + gName + "] a un precio $" + precio);
+            downFile.close();
 
             //Actualizar contador de juego
             games.seek(posGame);
+            games.readInt();
             games.readUTF();
             games.readChar();
             games.readInt();
             games.readDouble();
             int previous = games.readInt();
-
-            games.seek(posGame);
-            games.readUTF();
-            games.readChar();
-            games.readInt();
-            games.readDouble();
+            games.seek(games.getFilePointer() - 4); // volver a posición del contador
             games.writeInt(previous + 1);
+            games.readUTF(); // saltar rutaImagen
 
             //actualizar contador de jugador
             player.seek(posPlayer);
+            player.readInt();
             player.readUTF();
             player.readUTF();
             player.readUTF();
             player.readLong();
             int previousP = player.readInt();
-
-            player.seek(posPlayer);
-            player.readUTF();
-            player.readUTF();
-            player.readUTF();
-            player.readLong();
+            player.seek(player.getFilePointer() - 4); // volver a posición del contador
             player.writeInt(previousP + 1);
+            player.readUTF();
+            player.readUTF();
 
             return true;
         }
@@ -316,6 +288,7 @@ public class steam {
         return false;
 
     }
+
 
     private int calcularEdad(long fecha) {
         Date nacimiento = new Date(fecha);
@@ -325,7 +298,7 @@ public class steam {
 
         Calendar hoy = Calendar.getInstance();
 
-        int edad = hoy.get((Calendar.YEAR) - birthCalendar.get(Calendar.YEAR));
+        int edad = hoy.get(Calendar.YEAR) - birthCalendar.get(Calendar.YEAR);
 
         if (hoy.get(Calendar.MONTH) < birthCalendar.get(Calendar.MONTH)) {
             edad--;
@@ -336,34 +309,21 @@ public class steam {
         }
 
         return edad;
-
     }
 
     public boolean updatePriceFor(int code, double newPrice) throws IOException {
         games.seek(0);
         while (games.getFilePointer() < games.length()) {
+            long pos = games.getFilePointer();
             int codeG = games.readInt();
-            if (codeG == code) {
-                games.readUTF();
-                games.readChar();
-                games.readInt();
-
-                games.writeDouble(newPrice);
-                return true;
-            }
-
-            //movimiento Puntero
             games.readUTF();
             games.readChar();
             games.readInt();
-            games.readDouble();
+            games.writeDouble(newPrice);
             games.readInt();
             games.readUTF();
-
-            //lee todo y salta al nuevo espacio
         }
-
-        return false;
+        return true;
     }
 
     public void reportForClient(int codigo, String fileName) throws IOException {
@@ -381,41 +341,39 @@ public class steam {
         if (searchClient(codigo)) {
             player.seek(0);
             while (player.getFilePointer() < player.length()) {
+                long pos = player.getFilePointer();
                 int code = player.readInt();
-                if (code != codigo) {
-                    posClient = player.getFilePointer();
+                String u = player.readUTF();
+                String p = player.readUTF();
+                String n = player.readUTF();
+                long birth = player.readLong();
+                int cont = player.readInt();
+                String img = player.readUTF();
+                String tipo = player.readUTF();
+
+                if (code == codigo) {
+                    posClient = pos;
+                    username = u;
+                    nombre = n;
+                    nacimiento = birth;
+                    descargas = cont;
+                    rutaImag = img;
+                    type = tipo;
+                    break;
                 }
-                player.readUTF();
-                player.readUTF();
-                player.readUTF();
-                player.readLong();
-                player.readInt();
-                player.readUTF();
-                player.readUTF();
             }
 
-            //extraccion de info
-            player.seek(posClient);
-            username = player.readUTF();
-            player.readUTF();//obviamos password
-            nombre = player.readUTF();
-            nacimiento = player.readLong();
-            descargas = player.readInt();
-            rutaImag = player.readUTF();
-            type = player.readUTF();
-
             Date fechanacimiento = new Date(nacimiento);
-            String format = "dd/MM/yyyy";
-            SimpleDateFormat formtear = new SimpleDateFormat(format);
+            SimpleDateFormat formtear = new SimpleDateFormat("dd/MM/yyyy");
             String fechaD = formtear.format(fechanacimiento);
 
             BufferedWriter escribir = new BufferedWriter(new FileWriter(newReport));
             escribir.write("Codigo: " + codigo + "\n");
             escribir.write("Username: " + username + "\n");
             escribir.write("Nombre: " + nombre + "\n");
-            escribir.write("Fecha Nacimiento: " + fechaD);
-            escribir.write("Descargas Totales: " + descargas);
-            escribir.write("Tipo de Cuenta: " + type);
+            escribir.write("Fecha Nacimiento: " + fechaD + "\n");
+            escribir.write("Descargas Totales: " + descargas + "\n");
+            escribir.write("Tipo de Cuenta: " + type + "\n");
             escribir.close();
 
             if (newReport.createNewFile()) {
@@ -427,23 +385,24 @@ public class steam {
             JOptionPane.showMessageDialog(null, "NO SE PUEDE CREAR REPORTE");
         }
 
-        //escritura de los datos en el archivo
     }
 
     private boolean searchClient(int codigo) throws IOException {
         player.seek(0);
         while (player.getFilePointer() < player.length()) {
+            long pos = player.getFilePointer();
             int code = player.readInt();
-            if (code == codigo) {
-                return true;
-            }
-            player.readUTF();
+            String u = player.readUTF();
             player.readUTF();
             player.readUTF();
             player.readLong();
             player.readInt();
             player.readUTF();
             player.readUTF();
+
+            if (code == codigo && !u.equals("BORRADO")) {
+                return true;
+            }
         }
 
         return false;
@@ -466,6 +425,27 @@ public class steam {
         return gameList;
     }
 
+    public String printPlayers() throws IOException {
+        String playerList = "";
+        player.seek(0);
+
+        while (player.getFilePointer() < player.length()) {
+
+            int code = player.readInt();
+            String username = player.readUTF();
+            String password = player.readUTF();
+            String nombre = player.readUTF();
+            long nacimiento = player.readLong();
+            int contador = player.readInt();
+            String rutaImg = player.readUTF();
+            String tipo = player.readUTF();
+
+            playerList += code + " | " + username + " | " + nombre + " | descargas: " + contador + " | tipo: " + tipo + "\n";
+        }
+
+        return playerList;
+    }
+
     public class Player {
 
         private int code;
@@ -474,18 +454,34 @@ public class steam {
         private String nombre;
         private long nacimiento;
         private int contadorDownloads;
-        private String rutaImagen;
+        private String ImagePath;
         private String tipoUsuario;
 
-        public Player(int code, String username, String password, String nombre, long nacimiento, int contadorDownloads, String rutaImagen, String tipoUsuario) {
+        public Player(int code, String username, String password, String nombre, long nacimiento, int contadorDownloads, String ImagePath, String tipoUsuario) {
             this.code = code;
             this.username = username;
             this.password = password;
             this.nombre = nombre;
             this.nacimiento = nacimiento;
             this.contadorDownloads = contadorDownloads;
-            this.rutaImagen = rutaImagen;
+            this.ImagePath = ImagePath;
             this.tipoUsuario = tipoUsuario;
+        }
+
+        public int getContadorDownloads() {
+            return contadorDownloads;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public long getNacimiento() {
+            return nacimiento;
+        }
+
+        public String getImagePath() {
+            return ImagePath;
         }
 
         public String getTipoUsuario() {
@@ -509,47 +505,29 @@ public class steam {
     public Player login(String username, String password) throws IOException {
         player.seek(0);
         while (player.getFilePointer() < player.length()) {
-            int code = player.readInt();
-            String u = player.readUTF();
-            String p = player.readUTF();
-            String nombre = player.readUTF();
-            long nacimiento = player.readLong();
-            int contadorDownloads = player.readInt();
-            String rutaImg = player.readUTF();
-            String tipoUsuario = player.readUTF();
+            long startPos = player.getFilePointer();
+            try {
+                int code = player.readInt();
+                String u = player.readUTF();
+                String p = player.readUTF();
+                String nombre = player.readUTF();
+                long nacimiento = player.readLong();
+                int contadorDownloads = player.readInt();
+                String rutaImg = player.readUTF();
+                String tipoUsuario = player.readUTF();
 
-            if (u.equals(username) && p.equals(password)) {
-                return new Player(code, u, p, nombre, nacimiento, contadorDownloads, rutaImg, tipoUsuario);
+                if (u.equals(username) && p.equals(password)) {
+                    return new Player(code, u, p, nombre, nacimiento, contadorDownloads, rutaImg, tipoUsuario);
+                }
+            } catch (IOException ex) {
+                System.err.println("Registro corrupto en login, posición: " + startPos);
+                break;
             }
         }
         return null;
     }
 
-    public boolean updatePlayer(int code, String newName, String newPass) throws IOException {
-        player.seek(0);
-        while (player.getFilePointer() < player.length()) {
-            int c = player.readInt();
-            long pos = player.getFilePointer() - 4;
-            String u = player.readUTF();
-            String p = player.readUTF();
-            String n = player.readUTF();
-            long birth = player.readLong();
-            int downloads = player.readInt();
-            String img = player.readUTF();
-            String tipo = player.readUTF();
-
-            if (c == code) {
-                player.seek(pos + 4 + u.length() * 2 + 2);
-                player.writeUTF(newPass);
-                player.seek(pos + 4 + u.length() * 2 + 2 + newPass.length() * 2 + 2);
-                player.writeUTF(newName);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean deletePlayer(int code) throws IOException {
+    public boolean updatePlayer(int code, String newName, String newPass, String newImage) throws IOException {
         player.seek(0);
         while (player.getFilePointer() < player.length()) {
             long pos = player.getFilePointer();
@@ -562,13 +540,236 @@ public class steam {
             String img = player.readUTF();
             String tipo = player.readUTF();
 
-            if (c == code) {
-                player.seek(pos + 4);
-                player.writeUTF("BORRADO");
+            if (c == code && !u.equals("BORRADO")) {
+                //Reescribimos el registro completo de manera segura
+                player.seek(pos);
+                player.writeInt(c);
+                player.writeUTF(u);
+                player.writeUTF(newPass != null && !newPass.isEmpty() ? newPass : p);
+                player.writeUTF(newName != null && !newName.isEmpty() ? newName : n);
+                player.writeLong(birth);
+                player.writeInt(downloads);
+                player.writeUTF(newImage != null && !newImage.isEmpty() ? newImage : img);
+                player.writeUTF(tipo);
                 return true;
             }
         }
         return false;
     }
 
+    public boolean deletePlayer(int code) throws IOException {
+        player.seek(0);
+
+        while (player.getFilePointer() < player.length()) {
+            long pos = player.getFilePointer();
+            int c = player.readInt();
+            String username = player.readUTF();
+            String password = player.readUTF();
+            String nombre = player.readUTF();
+            long nacimiento = player.readLong();
+            int contador = player.readInt();
+            String rutaImg = player.readUTF();
+            String tipo = player.readUTF();
+
+            if (c == code) {
+                player.seek(pos + 4); //moverse al inicio del UTF username
+                player.writeUTF("BORRADO");
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public Player getPlayer(int code) throws IOException {
+        player.seek(0);
+        while (player.getFilePointer() < player.length()) {
+            long pos = player.getFilePointer();
+            int c = player.readInt();
+            String u = player.readUTF();
+            String p = player.readUTF();
+            String n = player.readUTF();
+            long birth = player.readLong();
+            int downloads = player.readInt();
+            String img = player.readUTF();
+            String tipo = player.readUTF();
+
+            if (c == code && !u.equals("BORRADO")) {
+                return new Player(c, u, p, n, birth, downloads, img, tipo);
+            }
+        }
+        return null;
+    }
+
+    public class Game {
+
+        private int code;
+        private String titulo;
+        private char os;
+        private int edadMin;
+        private double precio;
+        private int downloads;
+        private String imagePath;
+
+        public Game(int code, String titulo, char os, int edadMin, double precio, int downloads, String imagePath) {
+            this.code = code;
+            this.titulo = titulo;
+            this.os = os;
+            this.edadMin = edadMin;
+            this.precio = precio;
+            this.downloads = downloads;
+            this.imagePath = imagePath;
+        }
+
+        public int getCode() {
+            return code;
+        }
+
+        public String getTitulo() {
+            return titulo;
+        }
+
+        public char getOs() {
+            return os;
+        }
+
+        public int getEdadMin() {
+            return edadMin;
+        }
+
+        public double getPrecio() {
+            return precio;
+        }
+
+        public int getDownloads() {
+            return downloads;
+        }
+
+        public String getImagePath() {
+            return imagePath;
+        }
+    }
+    
+    public Game getGame(int code) throws IOException {
+        games.seek(0);
+        while (games.getFilePointer() < games.length()) {
+
+            long pos = games.getFilePointer();
+            int c = games.readInt();
+            String titulo = games.readUTF();
+            char os = games.readChar();
+            int edadMin = games.readInt();
+            double precio = games.readDouble();
+            int downloads = games.readInt();
+            String imagePath = games.readUTF();
+
+            if (c == code) {
+                return new Game(c, titulo, os, edadMin, precio, downloads, imagePath);
+            }
+        }
+        return null;
+    }
+    
+    public boolean updateGame(int code, String newTitle, char newOS, int newAge, double newPrice, String imagePath) throws IOException {
+
+        games.seek(0);
+
+        while (games.getFilePointer() < games.length()) {
+
+            long pos = games.getFilePointer();
+
+            int c = games.readInt();
+            String titulo = games.readUTF();
+            char os = games.readChar();
+            int edad = games.readInt();
+            double precio = games.readDouble();
+            int downloads = games.readInt();
+            games.writeUTF(imagePath != null && !imagePath.isEmpty() ? imagePath : "");
+
+            if (c == code) {
+
+                games.seek(pos);
+
+                games.writeInt(c);
+                games.writeUTF(newTitle != null ? newTitle : titulo);
+                games.writeChar(newOS != '\0' ? newOS : os);
+                games.writeInt(newAge >= 0 ? newAge : edad);
+                games.writeDouble(newPrice >= 0 ? newPrice : precio);
+                games.writeInt(downloads);
+                games.writeUTF(imagePath);
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+    
+    public boolean deleteGame(int code) throws IOException {
+
+        games.seek(0);
+
+        while (games.getFilePointer() < games.length()) {
+
+            long pos = games.getFilePointer();
+
+            int c = games.readInt();
+            String titulo = games.readUTF();
+            char os = games.readChar();
+            int edadMin = games.readInt();
+            double precio = games.readDouble();
+            int downloads = games.readInt();
+            String imagePath = games.readUTF();
+
+            if (c == code) {
+
+                games.seek(pos + 4);
+                games.writeUTF("BORRADO");
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public ArrayList<Game> getGames() throws IOException {
+        ArrayList<Game> lista = new ArrayList<>();
+
+        games.seek(0);
+
+        while (games.getFilePointer() < games.length()) {
+            int code = games.readInt();
+            String titulo = games.readUTF();
+            char os = games.readChar();
+            int edadMin = games.readInt();
+            double precio = games.readDouble();
+            int downloads = games.readInt();
+            String imagePath = games.readUTF();
+
+            lista.add(new Game(code, titulo, os, edadMin, precio, downloads, imagePath));
+        }
+
+        return lista;
+    }
+    
+    public boolean existeAdmin() throws IOException {
+        player.seek(0);
+        while (player.getFilePointer() < player.length()) {
+            long pos = player.getFilePointer();
+            int code = player.readInt();
+            String username = player.readUTF();
+            player.readUTF();
+            player.readUTF();
+            player.readLong();
+            player.readInt();
+            player.readUTF();
+            String tipo = player.readUTF();
+
+            if (!username.equals("BORRADO") && username.equals("admin")) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

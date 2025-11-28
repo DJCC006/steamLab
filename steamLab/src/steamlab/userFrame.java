@@ -119,24 +119,4 @@ public class userFrame extends JFrame {
         return btn;
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            try {
-                // Supongamos que 'steam' es tu clase principal que maneja players
-                steam st = new steam();
-
-                // Ejemplo de login
-                Player usuario = st.login("miUsuario", "miContraseña");
-
-                if (usuario != null) {
-                    new userFrame(st, usuario).setVisible(true);
-                } else {
-                    JOptionPane.showMessageDialog(null, "Usuario o contraseña incorrectos");
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
 }

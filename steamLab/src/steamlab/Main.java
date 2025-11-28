@@ -17,11 +17,15 @@ public class Main {
      */
     public static void main(String[] args) {
         steam st = new steam();
-
         try{
-            st.addPlayer("admin", "password", "Administrador Default", 1,
-                         "src\\res\\defaultImg.jpg", "admin");
-        }catch(IOException e){}
+            if (!st.existeAdmin()) {
+                int code=st.addPlayer("admin", "password", "Administrador Default", 1,
+                             "src\\res\\defaultImg.jpg", "admin");
+            }
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+        
 
         SwingUtilities.invokeLater(() -> new loginFrame(st).setVisible(true));
     }

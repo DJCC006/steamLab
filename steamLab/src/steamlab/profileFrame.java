@@ -4,20 +4,11 @@
  */
 package steamlab;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Image;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.IOException;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.border.EmptyBorder;
+import java.text.SimpleDateFormat;
+import javax.swing.*;
 
 /**
  *
@@ -27,7 +18,7 @@ public class profileFrame extends JFrame {
     private steam st;
     private steam.Player currentUser;
 
-    public profileFrame(steam st, steam.Player currentUser){
+    public profileFrame(steam st, steam.Player currentUser) {
         this.st = st;
         this.currentUser = currentUser;
 
@@ -49,12 +40,10 @@ public class profileFrame extends JFrame {
 
         JPanel contentPanel = new JPanel();
         contentPanel.setBackground(panelDark);
-        contentPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
         contentPanel.setLayout(null);
         contentPanel.setBounds(40, 15, 620, 680);
         mainPanel.add(contentPanel);
 
-        // Título
         JLabel lblTitulo = new JLabel("Perfil del Usuario", SwingConstants.CENTER);
         lblTitulo.setForeground(textLight);
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 36));
@@ -62,7 +51,7 @@ public class profileFrame extends JFrame {
         contentPanel.add(lblTitulo);
 
         // Imagen
-        JLabel lblImagen = new JLabel();
+        final JLabel lblImagen = new JLabel();
         lblImagen.setBounds(230, 125, 150, 150);
         lblImagen.setOpaque(true);
         lblImagen.setBackground(Color.GRAY);
@@ -79,39 +68,6 @@ public class profileFrame extends JFrame {
         btnCambiarImagen.setBounds(400, 175, 120, 40);
         contentPanel.add(btnCambiarImagen);
 
-        // Usuario
-        JLabel lblUsuario = new JLabel("Usuario:");
-        lblUsuario.setForeground(textLight);
-        lblUsuario.setFont(new Font("Segoe UI", Font.BOLD, 22));
-        lblUsuario.setBounds(80, 305, 200, 30);
-        contentPanel.add(lblUsuario);
-
-        JLabel txtUsuario = new JLabel(currentUser.getUsername());
-        txtUsuario.setForeground(textLight);
-        txtUsuario.setFont(new Font("Segoe UI", Font.PLAIN, 22));
-        txtUsuario.setBounds(280, 305, 200, 30);
-        contentPanel.add(txtUsuario);
-
-        // Contraseña
-        JLabel lblContra = new JLabel("Contraseña:");
-        lblContra.setForeground(textLight);
-        lblContra.setFont(new Font("Segoe UI", Font.BOLD, 22));
-        lblContra.setBounds(80, 365, 200, 30);
-        contentPanel.add(lblContra);
-
-        JLabel txtContra = new JLabel(currentUser.getPassword());
-        txtContra.setForeground(textLight);
-        txtContra.setFont(new Font("Segoe UI", Font.PLAIN, 22));
-        txtContra.setBounds(280, 365, 200, 30);
-        contentPanel.add(txtContra);
-
-        JButton btnCambiarContra = new JButton("Cambiar");
-        btnCambiarContra.setBackground(steamBlue);
-        btnCambiarContra.setForeground(textLight);
-        btnCambiarContra.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        btnCambiarContra.setBounds(480, 360, 110, 40);
-        contentPanel.add(btnCambiarContra);
-
         // Nombre
         JLabel lblNombre = new JLabel("Nombre:");
         lblNombre.setForeground(textLight);
@@ -119,7 +75,7 @@ public class profileFrame extends JFrame {
         lblNombre.setBounds(80, 405, 200, 30);
         contentPanel.add(lblNombre);
 
-        JLabel txtNombre = new JLabel(currentUser.getNombre());
+        final JLabel txtNombre = new JLabel(this.currentUser.getNombre());
         txtNombre.setForeground(textLight);
         txtNombre.setFont(new Font("Segoe UI", Font.PLAIN, 22));
         txtNombre.setBounds(280, 405, 200, 30);
@@ -132,14 +88,34 @@ public class profileFrame extends JFrame {
         btnCambiarNombreReal.setBounds(480, 400, 110, 40);
         contentPanel.add(btnCambiarNombreReal);
 
-        // Nacimiento
+        // Contraseña
+        JLabel lblContra = new JLabel("Contraseña:");
+        lblContra.setForeground(textLight);
+        lblContra.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        lblContra.setBounds(80, 365, 200, 30);
+        contentPanel.add(lblContra);
+
+        final JLabel txtContra = new JLabel(this.currentUser.getPassword());
+        txtContra.setForeground(textLight);
+        txtContra.setFont(new Font("Segoe UI", Font.PLAIN, 22));
+        txtContra.setBounds(280, 365, 200, 30);
+        contentPanel.add(txtContra);
+
+        JButton btnCambiarContra = new JButton("Cambiar");
+        btnCambiarContra.setBackground(steamBlue);
+        btnCambiarContra.setForeground(textLight);
+        btnCambiarContra.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        btnCambiarContra.setBounds(480, 360, 110, 40);
+        contentPanel.add(btnCambiarContra);
+
+        // Fecha de nacimiento
         JLabel lblNac = new JLabel("Nacimiento:");
         lblNac.setForeground(textLight);
         lblNac.setFont(new Font("Segoe UI", Font.BOLD, 22));
         lblNac.setBounds(80, 455, 200, 30);
         contentPanel.add(lblNac);
 
-        JLabel txtNac = new JLabel(String.valueOf(currentUser.getNacimiento()));
+        final JLabel txtNac = new JLabel(new SimpleDateFormat("dd/MM/yyyy").format(this.currentUser.getNacimiento()));
         txtNac.setForeground(textLight);
         txtNac.setFont(new Font("Segoe UI", Font.PLAIN, 22));
         txtNac.setBounds(280, 455, 300, 30);
@@ -152,7 +128,7 @@ public class profileFrame extends JFrame {
         lblDescargas.setBounds(80, 505, 200, 30);
         contentPanel.add(lblDescargas);
 
-        JLabel txtDescargas = new JLabel(String.valueOf(currentUser.getContadorDownloads()));
+        final JLabel txtDescargas = new JLabel(String.valueOf(this.currentUser.getContadorDownloads()));
         txtDescargas.setForeground(steamBlue);
         txtDescargas.setFont(new Font("Segoe UI", Font.BOLD, 26));
         txtDescargas.setBounds(280, 505, 200, 30);
@@ -166,11 +142,62 @@ public class profileFrame extends JFrame {
         btnVolver.setBounds(10, 10, 150, 50);
         contentPanel.add(btnVolver);
 
-        // Acción del botón volver
-        btnVolver.addActionListener(e -> {
-            this.dispose(); // Cierra profileFrame
-            new userFrame(st, currentUser).setVisible(true); // Abre userFrame con el mismo usuario
+        // LISTENERS
+        btnCambiarNombreReal.addActionListener(e -> {
+            String newName = JOptionPane.showInputDialog(this, "Nuevo nombre:", this.currentUser.getNombre());
+            if (newName != null && !newName.trim().isEmpty()) {
+                try {
+                    if (st.updatePlayer(this.currentUser.getCode(), newName, null, null)) {
+                        this.currentUser = st.getPlayer(this.currentUser.getCode());
+                        txtNombre.setText(this.currentUser.getNombre());
+                        JOptionPane.showMessageDialog(this, "Nombre actualizado correctamente.");
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Error al actualizar nombre.");
+                    }
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
         });
 
+        btnCambiarContra.addActionListener(e -> {
+            String newPass = JOptionPane.showInputDialog(this, "Nueva contraseña:", this.currentUser.getPassword());
+            if (newPass != null && !newPass.trim().isEmpty()) {
+                try {
+                    if (st.updatePlayer(this.currentUser.getCode(), null, newPass, null)) {
+                        this.currentUser = st.getPlayer(this.currentUser.getCode());
+                        txtContra.setText(this.currentUser.getPassword());
+                        JOptionPane.showMessageDialog(this, "Contraseña actualizada correctamente.");
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Error al actualizar contraseña.");
+                    }
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+        btnCambiarImagen.addActionListener(e -> {
+            JFileChooser chooser = new JFileChooser();
+            int result = chooser.showOpenDialog(this);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                String path = chooser.getSelectedFile().getAbsolutePath();
+                try {
+                    if (st.updatePlayer(this.currentUser.getCode(), null, null, path)) {
+                        this.currentUser = st.getPlayer(this.currentUser.getCode());
+                        ImageIcon newIcon = new ImageIcon(path);
+                        lblImagen.setIcon(new ImageIcon(newIcon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH)));
+                        JOptionPane.showMessageDialog(this, "Imagen actualizada correctamente.");
+                    }
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+        btnVolver.addActionListener(e -> {
+            this.dispose();
+            new userFrame(st, this.currentUser).setVisible(true);
+        });
     }
 }

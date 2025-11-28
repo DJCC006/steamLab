@@ -83,23 +83,27 @@ public class userFrame extends JFrame {
 
         btnVolver.addActionListener(e -> {
             this.dispose();
-            new loginFrame().setVisible(true);
-        });
 
+            new loginFrame(st).setVisible(true);
+        });
         btnCatalogo.addActionListener(e -> {
-            // TODO: ver catálogo
+            this.dispose();
+            new catalogFrame(st, currentUser).setVisible(true);
         });
 
+        /*Esto va en catalogo
         btnDescargar.addActionListener(e -> {
-            // TODO: descargar juegos
+            this.dispose();
+            new catalogFrame(st, currentUser).setVisible(true);
         });
-
+         */
         btnDescargados.addActionListener(e -> {
-            // TODO: ver juegos descargados
+
         });
 
         btnConfigPerfil.addActionListener(e -> {
-            // TODO: configurar perfil
+            this.dispose();
+            new profileFrame(st, currentUser).setVisible(true);
         });
 
     }

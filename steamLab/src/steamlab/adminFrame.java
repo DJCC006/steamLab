@@ -8,14 +8,23 @@ package steamlab;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import steamlab.steam.Player;
 /**
  *
  * @author ljmc2
  */
 public class adminFrame extends JFrame {
+    private steam st;
+    private Player currentUser;
 
-    public adminFrame() {
+    public adminFrame(steam st, Player currentUser){
+        this.st = st;
+        this.currentUser = currentUser;
 
+        setTitle("Admin - " + currentUser.getNombre());
+        setSize(800,600);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("Administrador");
         setSize(800, 800);
         setLocationRelativeTo(null);
@@ -114,7 +123,7 @@ public class adminFrame extends JFrame {
         btn9.setBounds(190, 440, 330, 90);
         buttonsPanel.add(btn9);
 
-        JButton btn10 = new JButton("← Volver");
+        JButton btn10 = new JButton("← Cerrar Sesión");
         btn10.setBackground(bgDark);
         btn10.setForeground(textLight);
         btn10.setFont(new Font("Segoe UI", Font.BOLD, 24));
@@ -122,7 +131,4 @@ public class adminFrame extends JFrame {
         contentPanel.add(btn10);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new adminFrame().setVisible(true));
-    }
 }

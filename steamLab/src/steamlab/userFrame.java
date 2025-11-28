@@ -7,14 +7,23 @@ package steamlab;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import steamlab.steam.Player;
 /**
  *
  * @author ljmc2
  */
 public class userFrame extends JFrame {
+    private steam st;
+    private Player currentUser;
 
-    public userFrame() {
+    public userFrame(steam st, Player currentUser){
+        this.st = st;
+        this.currentUser = currentUser;
 
+        setTitle("Admin - " + currentUser.getNombre());
+        setSize(800,600);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("MENÚ USUARIO");
         setSize(620, 520); 
         setLocationRelativeTo(null);
@@ -35,7 +44,7 @@ public class userFrame extends JFrame {
         topPanel.setBackground(bgDark);
         topPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        JButton btnVolver = new JButton("← Volver");
+        JButton btnVolver = new JButton("← Cerrar Sesión");
         btnVolver.setBackground(panelDark);
         btnVolver.setForeground(textLight);
         btnVolver.setFont(new Font("Segoe UI", Font.BOLD, 16));
@@ -103,9 +112,5 @@ public class userFrame extends JFrame {
         btn.setBorder(BorderFactory.createEmptyBorder(12, 20, 12, 20));
         btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         return btn;
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new userFrame().setVisible(true));
     }
 }

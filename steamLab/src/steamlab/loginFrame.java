@@ -5,15 +5,19 @@
 package steamlab;
 
 import java.awt.*;
+import java.io.IOException;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import steamlab.steam.Player;
 /**
  *
  * @author ljmc2
  */
 public class loginFrame extends JFrame {
-
-    public loginFrame() {
+    private steam st;
+    
+    public loginFrame(steam st) {
+        this.st = st;
         setTitle("LOGIN");
         setSize(520, 420);
         setLocationRelativeTo(null);
@@ -75,13 +79,29 @@ public class loginFrame extends JFrame {
         
         
         btnLogin.addActionListener(e -> {
-            // TODO: iniciar sesión
+            String username = txtUser.getText();
+            String password = new String(txtPass.getPassword());
+
+            try {
+                Player loggedUser = st.login(username, password);
+                if(loggedUser != null){
+                    JOptionPane.showMessageDialog(this, "Login exitoso.");
+
+                    if(loggedUser.getTipoUsuario().equals("admin")){
+                        new adminFrame(st, loggedUser).setVisible(true);
+                    } else {
+                        new userFrame(st, loggedUser).setVisible(true);
+                    }
+                    this.dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos");
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         });
         
         
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new loginFrame().setVisible(true));
-    }
 }

@@ -16,20 +16,14 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        
-        steam st=new steam();
-        try{//administrador default
-            st.addPlayer("admin", 
-                    "password", 
-                    "Administrador Default", 
-                    1,
-                    "src\\res\\defaultImg.jpg", 
-                    "admin");
-        
-        }catch(IOException e){
-            e.getMessage();
-        }
-        SwingUtilities.invokeLater(() -> new loginFrame().setVisible(true));
+        steam st = new steam();
+
+        try{
+            st.addPlayer("admin", "password", "Administrador Default", 1,
+                         "src\\res\\defaultImg.jpg", "admin");
+        }catch(IOException e){}
+
+        SwingUtilities.invokeLater(() -> new loginFrame(st).setVisible(true));
     }
     
 }

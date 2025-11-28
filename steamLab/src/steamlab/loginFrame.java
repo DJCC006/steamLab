@@ -14,7 +14,7 @@ import javax.swing.border.EmptyBorder;
 public class loginFrame extends JFrame {
 
     public loginFrame() {
-        setTitle("Steam - Login");
+        setTitle("LOGIN");
         setSize(520, 420);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -32,21 +32,21 @@ public class loginFrame extends JFrame {
 
         JPanel formPanel = new JPanel();
         formPanel.setBackground(panelDark);
-        formPanel.setBorder(new EmptyBorder(30, 40, 30, 40)); // más padding
+        formPanel.setBorder(new EmptyBorder(30, 40, 30, 40));
         formPanel.setLayout(new GridLayout(6, 1, 15, 15));
 
         JLabel title = new JLabel("Iniciar Sesión");
         title.setForeground(textLight);
-        title.setFont(new Font("Segoe UI", Font.BOLD, 28)); // fuente más grande
+        title.setFont(new Font("Segoe UI", Font.BOLD, 28));
         title.setHorizontalAlignment(SwingConstants.CENTER);
 
         JTextField txtUser = new JTextField();
         txtUser.setBackground(Color.WHITE);
         txtUser.setForeground(Color.BLACK);
-        txtUser.setFont(new Font("Segoe UI", Font.PLAIN, 18)); // más grande
+        txtUser.setFont(new Font("Segoe UI", Font.PLAIN, 18));
         txtUser.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(steamBlue, 2),
-                BorderFactory.createEmptyBorder(10, 15, 10, 15) // inputs más altos
+                BorderFactory.createEmptyBorder(10, 15, 10, 15)
         ));
 
         JPasswordField txtPass = new JPasswordField();
@@ -72,6 +72,13 @@ public class loginFrame extends JFrame {
         formPanel.add(btnLogin);
 
         mainPanel.add(formPanel);
+        
+        
+        btnLogin.addActionListener(e -> {
+            // TODO: iniciar sesión
+        });
+        
+        
     }
 
     public static void main(String[] args) {

@@ -4,10 +4,108 @@
  */
 package steamlab;
 
+import java.awt.*;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 /**
  *
  * @author ljmc2
  */
-public class userFrame {
+public class userFrame extends JFrame {
+
+    public userFrame() {
+
+        setTitle("MENÚ USUARIO");
+        setSize(620, 520); 
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setResizable(false);
+
+        Color bgDark = new Color(23, 26, 33);
+        Color panelDark = new Color(36, 41, 51);
+        Color steamBlue = new Color(0, 153, 255);
+        Color textLight = Color.WHITE;
+
+        JPanel mainPanel = new JPanel();
+        mainPanel.setBackground(bgDark);
+        mainPanel.setLayout(new BorderLayout());
+        add(mainPanel);
+
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setBackground(bgDark);
+        topPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+
+        JButton btnVolver = new JButton("← Volver");
+        btnVolver.setBackground(panelDark);
+        btnVolver.setForeground(textLight);
+        btnVolver.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        btnVolver.setFocusPainted(false);
+        btnVolver.setBorder(BorderFactory.createEmptyBorder(6, 15, 6, 15));
+        btnVolver.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+        topPanel.add(btnVolver, BorderLayout.WEST);
+
+        JLabel lblTitulo = new JLabel("MENÚ PRINCIPAL", SwingConstants.CENTER);
+        lblTitulo.setForeground(textLight);
+        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        topPanel.add(lblTitulo, BorderLayout.CENTER);
+
+        mainPanel.add(topPanel, BorderLayout.NORTH);
+
+        JPanel centerPanel = new JPanel();
+        centerPanel.setBackground(panelDark);
+        centerPanel.setBorder(new EmptyBorder(40, 50, 40, 50));
+        centerPanel.setLayout(new GridLayout(4, 1, 25, 25));
+
+        JButton btnCatalogo = createSteamButton("Ver catálogo de juegos", steamBlue, textLight);
+        JButton btnDescargar = createSteamButton("Descargar juegos", steamBlue, textLight);
+        JButton btnDescargados = createSteamButton("Ver juegos descargados", steamBlue, textLight);
+        JButton btnConfigPerfil = createSteamButton("Configurar perfil", steamBlue, textLight);
+
+        centerPanel.add(btnCatalogo);
+        centerPanel.add(btnDescargar);
+        centerPanel.add(btnDescargados);
+        centerPanel.add(btnConfigPerfil);
+
+        mainPanel.add(centerPanel, BorderLayout.CENTER);
+        
+        btnVolver.addActionListener(e -> {
+            // TODO: volver
+        });
+
+        btnCatalogo.addActionListener(e -> {
+            // TODO: ver catálogo
+        });
+
+        btnDescargar.addActionListener(e -> {
+            // TODO: descargar juegos
+        });
+
+        btnDescargados.addActionListener(e -> {
+            // TODO: ver juegos descargados
+        });
+
+        btnConfigPerfil.addActionListener(e -> {
+            // TODO: configurar perfil
+        });
+        
+        
+    }
     
+    
+
+    private JButton createSteamButton(String text, Color bg, Color fg) {
+        JButton btn = new JButton(text);
+        btn.setBackground(bg);
+        btn.setForeground(fg);
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        btn.setFocusPainted(false);
+        btn.setBorder(BorderFactory.createEmptyBorder(12, 20, 12, 20));
+        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        return btn;
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new userFrame().setVisible(true));
+    }
 }

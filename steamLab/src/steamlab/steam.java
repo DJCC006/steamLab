@@ -135,18 +135,9 @@ public class steam {
     String tipoUsuario (“admin” o “normal”)
    */
    
-   public void addPlayer() throws IOException {
+   public void addPlayer(String username, String password, String realName, long nacimiento,  byte[] Imagen, String tipo) throws IOException {
        int code=getCode(1);//obtencion de codigo en base a la funcion
-       
-       //solo para tener la idea de las cosas
-       String username="";
-       String password="";
-       String realName="";
-       long nacimiento=0;
-       //contadowDownloads
-       byte[] Imagen = null;
-       String tipo="";
-       
+   
        //Posicionamiento al final de la longitud
        player.seek(player.length());
        

@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Calendar;
 import java.util.Date;
-
+import java.text.SimpleDateFormat;
 /**
  *
  * @author David
@@ -17,6 +17,7 @@ import java.util.Date;
 public class steam {
     
     private RandomAccessFile codes,games, player;
+    private String pathDownloads= "steam/downloads";
     public steam(){
         
         //Creacion de carpetas
@@ -176,6 +177,14 @@ public class steam {
        long posGame=0;
        long posPlayer=0;
        int minAge=0;
+       String rutaImagen="";
+       
+       
+       String pName= "";
+       String gName = "";
+       
+       double precio=0;
+       
        
        
        //revion de existencia juego
@@ -185,9 +194,16 @@ public class steam {
            if(code==codeGame){
                gExists=true;
                posGame=games.getFilePointer();
-               games.readUTF();
+               gName=games.readUTF();
                games.readChar();
                minAge=games.readInt();//obtencion de edad minima para ese juego
+               
+                precio=games.readDouble();
+                games.readInt();
+                rutaImagen=games.readUTF();
+               
+               
+               
                break;
            }
            
@@ -210,6 +226,11 @@ public class steam {
            if(code == codePlayer){
                pExists=true;
                posPlayer=player.getFilePointer();//referencia de jugador 
+               
+               player.readUTF();
+               player.readUTF();
+               
+               pName=player.readUTF();
                break;
            }
            
@@ -252,6 +273,71 @@ public class steam {
        
        
        if(gExists==true && pExists==true && osExists == true && ed ==true){
+           
+           //Crecion codigo
+           int codeD= getCode(3);
+           
+           //creacion archivo de nueva descarga
+           String newPath= pathDownloads+"/download"+codeD+".stm";
+           File newDownload = new File(newPath);
+           RandomAccessFile downFile = new RandomAccessFile(newDownload, "rw");
+           
+           
+           /*
+           UTF Fecha
+           UTF Imagen
+           UTF Codigo
+           UTF Nombres
+           UTF precio 
+           */
+           
+           //obtencion de fecha
+           Calendar fechaDescarga = Calendar.getInstance();
+           String format = "dd/MM/yyyy";
+           SimpleDateFormat formtear = new SimpleDateFormat(format);
+           String fechaD= formtear.format(fechaDescarga.getTime());
+           
+           
+           downFile.writeUTF(fechaD);
+           downFile.writeUTF(rutaImagen);
+           downFile.writeUTF("Download #"+codeD);
+           downFile.writeUTF(pName+" ha bajado ["+gName+"] a un precio $"+precio);
+           
+           
+           
+           
+           //Actualizar contador de juego
+            games.seek(posGame);
+            games.readUTF();
+            games.readChar();
+            games.readInt();
+            games.readDouble();
+            int previous = games.readInt();
+            
+            games.seek(posGame);
+            games.readUTF();
+            games.readChar();
+            games.readInt();
+            games.readDouble();
+            games.writeInt(previous+1);
+            
+            
+            
+            //actualizar contador de jugador
+            player.seek(posPlayer);
+            player.readUTF();
+            player.readUTF();
+            player.readUTF();
+            player.readLong();
+            int previousP = player.readInt();
+            
+            player.seek(posPlayer);
+            player.readUTF();
+            player.readUTF();
+            player.readUTF();
+            player.readLong();
+            player.writeInt(previousP+1);
+            
            return true;
        }
        
@@ -284,6 +370,35 @@ public class steam {
        
    }
    
+   
+   
+   
+   public boolean updatePriceFor(int code, double newPrice) throws IOException{
+       games.seek(0);
+       while(games.getFilePointer()<games.length()){
+           int codeG= games.readInt();
+           if(codeG==code){
+               games.readUTF();
+               games.readChar();
+               games.readInt();
+               
+               games.writeDouble(newPrice);
+               return true;
+           }
+           
+           //movimiento Puntero
+           games.readUTF();
+           games.readChar();
+           games.readInt();
+           games.readDouble();
+           games.readInt();
+           games.readUTF();
+           
+           //lee todo y salta al nuevo espacio
+       }
+       
+       return false;
+   }
    
     
     
